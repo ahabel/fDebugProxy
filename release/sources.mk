@@ -26,5 +26,4 @@ SUBDIRS := \
 src/syslog \
 src \
 src/json \
-src/fconfig \
 
