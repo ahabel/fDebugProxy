@@ -6,7 +6,6 @@
 
 #include "global.h"
 #include "syslog/fsyslog.h"
-#include "fconfig/fconfig.h"
 #include "fdebugproxy.h"
 #include "json/cJSON.h"
 
