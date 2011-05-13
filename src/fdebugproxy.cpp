@@ -22,7 +22,6 @@ fDebugProxy::fDebugProxy() {
 
 void fDebugProxy::run() {
    char str[BUF_SIZE];
-   int i;
    
    // get socket input
    while(fgets(str, BUF_SIZE, stdin)) {
@@ -31,30 +30,25 @@ void fDebugProxy::run() {
          str[strlen(str)-1] = '\0';
       }
       
-      //char buf[strlen(str)+100];
-      //sprintf(buf, "<<<< in <<<< -- size:%i -- [%s]", strlen(str), str);
-      //this->log->info(buf);
-      
       fDebugMessage message = this->parse(str);
       
-      // REGISTER
-      if (strcmp(message.type, "REGISTER") == 0) {
-         this->registerClient();
-         this->write("OK");
-         return;
-      }
-      
-      // SETCLIENT
-      if (strcmp(message.type, "SETCLIENT") == 0) {
-         this->setClient(message);
-         this->write("OK");
-         continue;
-      }
-      
-      // CONTROL
-      if (strcmp(message.type, "CONTROL") == 0) {
-         this->handleControl(message);
-         this->write("OK");
+      switch(message.type) {
+         case FDEBUG_REGISTER: {
+            this->registerClient();
+            this->sendServer("OK");
+            return;
+         }
+         
+         case FDEBUG_SETCLIENT: {
+            this->setClient(message);
+            this->sendServer("OK");
+            continue;
+         }
+         
+         case FDEBUG_CONTROL: {
+            this->handleControl(message);
+            this->sendServer("OK");
+         }
       }
       
       if (this->socket == NULL) {
@@ -63,48 +57,53 @@ void fDebugProxy::run() {
       }
       
       if (!this->forwardData(message)) {
-         // TODO: should be exit with code 1 here?
+         // TODO: exit with code 1 here?
          exit(1);
       }
       
-      this->write("OK");
+      this->sendServer("OK");
    }
 }
 
 fDebugMessage fDebugProxy::parse(char *str) {
-   fDebugMessage message;
-   
-   cJSON *root = cJSON_Parse(str);
-   if (root->type != 6) {
-      // message is not an json object / 6 = CJSON_OBJECT
-      //log->write("ERROR: parsing json failed");
-      return message;
-   }
-   
-   char *type = cJSON_GetObjectItem(root, "type")->valuestring;
-   cJSON *payload = cJSON_GetObjectItem(root, "payload");
-   
-   
    // client register:
    //    {"type":"REGISTER","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}","PORT":5005}}
    
    // server -> proxy connect
    //     {"type":"SETCLIENT","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}"}}
    
-   message.origin  = str;
-   message.type    = type;
-   message.payload = payload;
+   fDebugMessage message;
+   message.origin = str;
    
+   
+   // Check if received message is a valid JSON structure
+   cJSON *root = cJSON_Parse(str);
+   if (root->type != 6) {
+      // message is not an json object / 6 = CJSON_OBJECT
+      //log->sendServer("ERROR: parsing json failed");
+      return message;
+   }
+   
+   
+   string type = cJSON_GetObjectItem(root, "type")->valuestring;
+   message.type = 2;
+   
+   if (type == "REGISTER") {
+      message.type = FDEBUG_REGISTER;
+   } else if (type == "SETCLIENT") {
+      message.type = FDEBUG_SETCLIENT;
+   } else if (type == "CONTROL") {
+      message.type = FDEBUG_CONTROL;
+   }
+   
+   cJSON *payload = cJSON_GetObjectItem(root, "payload");
+   message.payload = payload;
    return message;
 }
 
-bool fDebugProxy::write(const char* str) {
+bool fDebugProxy::sendServer(const char* str) {
    fprintf(stdout, "%s\r\n", str);
    cout.flush();
-   
-   //char buf[80];
-   //sprintf(buf, ">> [%s]\n", str);
-   //this->log->info(buf);
    return true;
 }
 
@@ -120,7 +119,7 @@ void fDebugProxy::handleControl(fDebugMessage message) {
    if (action == "QUIT") {
       this->forwardData(message);
       this->socket->close();
-      this->write("OK");
+      this->sendServer("OK");
    }
 }
 
