@@ -112,12 +112,12 @@ void fDebugProxy::handleControl(fDebugMessage message) {
    // {"type":"CONTROL","payload":{"action":"HELO","url":"\/de\/site\/index.xml","server":"bluepoints.mobile.dev"}}
    // {"type":"CONTROL","payload":{"action":"QUIT"}}
 
-   char *action = cJSON_GetObjectItem(message.payload, "action")->valuestring;
-   if (strcmp(action, "HELO") == 0) {
-      this->log->info("HELO from %s", message.payload);
+   string action = cJSON_GetObjectItem(message.payload, "action")->valuestring;
+   if (action == "HELO") {
+      this->log->info("HELO from %s", cJSON_GetObjectItem(message.payload, "server")->valuestring);
    }
 
-   if (strcmp(action, "QUIT") == 0) {
+   if (action == "QUIT") {
       this->forwardData(message);
       this->socket->close();
       this->write("OK");
