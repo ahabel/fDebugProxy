@@ -4,11 +4,17 @@
 #include "json/cJSON.h"
 #include "fdebugsocket.h"
 
+
+//
+// fDebug Message
+//
 struct fDebugMessage {
    char  *origin;
-   char  *type;
+   int   type;
    cJSON *payload;
 };
+
+
 
 class fDebugProxy {
 public:
@@ -22,7 +28,7 @@ private:
    fDebugSocket   *socket;
    
    void           handleControl(fDebugMessage message);
-   bool           write(const char* str);
+   bool           sendServer(const char* str);
    bool           forwardData(fDebugMessage message);
    fDebugMessage  parse(char *str);
 };
