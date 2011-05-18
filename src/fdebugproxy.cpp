@@ -135,7 +135,7 @@ void fDebugProxy::registerClient() {
 }
 
 void fDebugProxy::setClient(fDebugMessage message) {
-   sClient client = this->db->getClient('uuid');
+   sClient client = this->db->getClient("uuid");
    this->socket = new fDebugSocket();
    this->socket->connectClient("127.0.0.1", 5005);
    //this->socket->connectClient(client.remote, client.port);
