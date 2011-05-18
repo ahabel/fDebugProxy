@@ -10,6 +10,8 @@
 class Database {
 public:
    Database();
+   bool open(std::string db);
+
 };
 
 #endif /*PROXY_DATABASE_H_*/
