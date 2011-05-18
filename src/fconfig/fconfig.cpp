@@ -21,6 +21,7 @@ fConfig* fConfig::getInstance() {
    if (!m_pInstance) {
       m_pInstance = new fConfig;
    }
+
    return m_pInstance;
 }
 
