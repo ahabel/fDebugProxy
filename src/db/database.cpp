@@ -45,6 +45,27 @@ bool ClientDB::addClient(string uuid, string remote, string port) {
    return true;
 }
 
+sClient ClientDB::getClient(string uuid) {
+   sqlite3_stmt* stmt;
+   const char* tail;
+   const char* query;
+
+   query = "select remote,port from clients where uuid=?";
+   sqlite3_prepare(this->db, query, strlen(query), &stmt, &tail);
+   sqlite3_bind_text(stmt, 1, uuid.c_str(), -1, SQLITE_STATIC);
+   sqlite3_step(stmt);
+
+   sClient client;
+   if (sqlite3_data_count(stmt) > 0) {
+      client.uuid   = uuid;
+      client.remote = sqlite3_column_text(stmt, 0);
+      client.port   = sqlite3_column_text(stmt, 1);
+      //printf("%s:%s\n", client.remote, client.port);
+   }
+
+   return client;
+}
+
 void ClientDB::createTables() {
    char* db_err;
    sqlite3_stmt* stmt;
