@@ -29,7 +29,7 @@
 <option id="gnu.cpp.compiler.option.preprocessor.def.379538960" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
 <option id="gnu.cpp.compiler.option.preprocessor.undef.613536272" name="Undefined symbols (-U)" superClass="gnu.cpp.compiler.option.preprocessor.undef"/>
 <option id="gnu.cpp.compiler.option.include.paths.1507022763" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/fdebug-proxy/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 </option>
 <option id="gnu.cpp.compiler.option.optimization.flags.1385604354" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags"/>
 <option id="gnu.cpp.compiler.option.debugging.other.1606731905" name="Other debugging flags" superClass="gnu.cpp.compiler.option.debugging.other"/>
@@ -49,7 +49,7 @@
 <option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.exe.release.option.optimization.level.964975096" name="Optimization Level" superClass="gnu.c.compiler.exe.release.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.release.option.debugging.level.2032177220" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 <option id="gnu.c.compiler.option.include.paths.1982281291" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-<listOptionValue builtIn="false" value="&quot;${workspace_loc:/fdebug-proxy/include}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.839696319" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
@@ -75,6 +75,33 @@
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.197435309" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1497411433" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+</tool>
+</toolChain>
+</folderInfo>
+<folderInfo id="cdt.managedbuild.config.gnu.exe.release.319435645.1706994315" name="/" resourcePath="release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.1835149256" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.release" unusedChildren="">
+<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.release" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.archiver.base.455114629" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.139611987"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1265365351" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.123498860">
+<option id="gnu.cpp.compiler.exe.release.option.optimization.level.2028361613" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1068301247" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+<option id="gnu.cpp.compiler.option.include.paths.1486528764" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
+</option>
+<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1038375775" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.760454677" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release.142658822">
+<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.exe.release.option.optimization.level.744062371" name="Optimization Level" superClass="gnu.c.compiler.exe.release.option.optimization.level" valueType="enumerated"/>
+<option id="gnu.c.compiler.exe.release.option.debugging.level.226101629" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+<option id="gnu.c.compiler.option.include.paths.770741210" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;../include&quot;"/>
+</option>
+<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1078756627" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1164524009" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release.20735094"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.289249440" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.514809824"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1267258032" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release.197435309">
+<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1553042779" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 </toolChain>
 </folderInfo>
@@ -334,6 +361,7 @@
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 <storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cconfiguration>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
