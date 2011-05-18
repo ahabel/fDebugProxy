@@ -3,6 +3,7 @@
 
 #include "json/cJSON.h"
 #include "fdebugsocket.h"
+#include "db/database.h"
 
 
 //
@@ -26,6 +27,7 @@ public:
 private:
    fSysLog        *log;
    fDebugSocket   *socket;
+   ClientDB       *db;
    
    void           handleControl(fDebugMessage message);
    bool           sendServer(const char* str);

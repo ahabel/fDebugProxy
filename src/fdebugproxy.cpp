@@ -9,6 +9,7 @@
 #include "syslog/fsyslog.h"
 #include "fdebugproxy.h"
 #include "fdebugsocket.h"
+#include "db/database.h"
 
 using namespace std;
 
@@ -17,6 +18,11 @@ fDebugProxy::fDebugProxy() {
    this->log = fSysLog::getInstance();
    this->log->init((char*)FDEBUG_LOGFILE);
    this->log->info("Processing new connection from %s (%s)", getenv("TCPREMOTEIP"), getenv("TCPREMOTEHOST"));
+
+   // init sqlite db
+   this->db = new ClientDB();
+   this->db->open("/tmp/x_fdebug.db");
+
    this->socket = NULL;
 }
 
@@ -125,11 +131,14 @@ void fDebugProxy::handleControl(fDebugMessage message) {
 
 void fDebugProxy::registerClient() {
    this->log->info("Registration with client completed");
+   this->db->addClient("foo", "x", "1002");
 }
 
 void fDebugProxy::setClient(fDebugMessage message) {
+   sClient client = this->db->getClient('uuid');
    this->socket = new fDebugSocket();
    this->socket->connectClient("127.0.0.1", 5005);
+   //this->socket->connectClient(client.remote, client.port);
 }
 
 bool fDebugProxy::forwardData(fDebugMessage message) {
