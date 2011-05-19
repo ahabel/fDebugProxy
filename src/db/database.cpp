@@ -11,15 +11,14 @@
 using namespace std;
 
 ClientDB::ClientDB() {
+   this->log = fSysLog::getInstance();
 }
 
 void ClientDB::open(string dbFile) {
-   printf("opening db '%s'\n", dbFile.c_str());
-
    int rc;
    rc = sqlite3_open(dbFile.c_str(), &this->db);
    if (rc) {
-      fprintf(stderr, "Cannot open database '%s': %s\n", dbFile.c_str(), sqlite3_errmsg(db));
+      this->log->error("Cannot open database '%s': %s\n", dbFile.c_str(), sqlite3_errmsg(db));
       sqlite3_close(this->db);
       exit(1);
    }
@@ -40,7 +39,7 @@ bool ClientDB::addClient(string uuid, string remote, int port) {
 
    int rc = sqlite3_step(stmt);
    if (rc != SQLITE_DONE) {
-      fprintf(stderr, "SQLite Query failed (Error %d): %s\n", rc, sqlite3_errmsg(this->db));
+      this->log->error("SQLite Query failed (Error %d): %s\n", rc, sqlite3_errmsg(this->db));
       return false;
    }
 
@@ -62,8 +61,6 @@ sClient ClientDB::getClient(string uuid) {
       client.uuid   = uuid;
       client.remote = (const char*) sqlite3_column_text(stmt, 0);
       client.port   = sqlite3_column_int(stmt, 1);
-      fSysLog *log = fSysLog::getInstance();
-      log->info("found: %s -> %i\n", client.remote, client.port);
    }
 
    return client;
@@ -79,11 +76,10 @@ void ClientDB::createTables() {
    query = "CREATE TABLE IF NOT EXISTS clients (uuid TEXT, remote TEXT, port TEXT, PRIMARY KEY ( uuid ))";
    rc = sqlite3_prepare(this->db, query, strlen(query), &stmt, &tail);
    if (rc != SQLITE_OK) {
-      fprintf(stderr, "Error preparing SQL: %s\n", sqlite3_errmsg(this->db));
+      this->log->error("Error preparing SQL: %s\n", sqlite3_errmsg(this->db));
    }
 
    rc = sqlite3_exec(this->db, query, NULL, 0, &db_err);
-   printf("ret: %d\n", rc);
 }
 
 void ClientDB::close() {
