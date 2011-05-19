@@ -6,6 +6,8 @@
 
 #include "db/database.h"
 
+#include "syslog/fsyslog.h"
+
 using namespace std;
 
 ClientDB::ClientDB() {
@@ -18,14 +20,14 @@ void ClientDB::open(string dbFile) {
    rc = sqlite3_open(dbFile.c_str(), &this->db);
    if (rc) {
       fprintf(stderr, "Cannot open database '%s': %s\n", dbFile.c_str(), sqlite3_errmsg(db));
-      sqlite3_close(db);
+      sqlite3_close(this->db);
       exit(1);
    }
 
    this->createTables();
 }
 
-bool ClientDB::addClient(string uuid, string remote, string port) {
+bool ClientDB::addClient(string uuid, string remote, int port) {
    sqlite3_stmt* stmt;
    const char* tail;
    const char* query;
@@ -34,7 +36,7 @@ bool ClientDB::addClient(string uuid, string remote, string port) {
    sqlite3_prepare(this->db, query, strlen(query), &stmt, &tail);
    sqlite3_bind_text(stmt, 1, uuid.c_str(), -1, SQLITE_STATIC);
    sqlite3_bind_text(stmt, 2, remote.c_str(), -1, SQLITE_STATIC);
-   sqlite3_bind_text(stmt, 3, port.c_str(), -1, SQLITE_STATIC);
+   sqlite3_bind_int(stmt, 3, port);
 
    int rc = sqlite3_step(stmt);
    if (rc != SQLITE_DONE) {
@@ -58,9 +60,10 @@ sClient ClientDB::getClient(string uuid) {
    sClient client;
    if (sqlite3_data_count(stmt) > 0) {
       client.uuid   = uuid;
-      client.remote = sqlite3_column_text(stmt, 0);
-      client.port   = sqlite3_column_text(stmt, 1);
-      //printf("%s:%s\n", client.remote, client.port);
+      client.remote = (const char*) sqlite3_column_text(stmt, 0);
+      client.port   = sqlite3_column_int(stmt, 1);
+      fSysLog *log = fSysLog::getInstance();
+      log->info("found: %s -> %i\n", client.remote, client.port);
    }
 
    return client;
@@ -81,6 +84,10 @@ void ClientDB::createTables() {
 
    rc = sqlite3_exec(this->db, query, NULL, 0, &db_err);
    printf("ret: %d\n", rc);
+}
+
+void ClientDB::close() {
+   sqlite3_close(this->db);
 }
 
 
