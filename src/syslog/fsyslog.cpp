@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <stdarg.h>
 
+#include "global.h"
 #include "syslog/fsyslog.h"
 
 fSysLog* fSysLog::m_pInstance = NULL;
@@ -43,7 +44,24 @@ void fSysLog::info(const char* message, ...) {
    va_start(marker, message);
    Ret = vasprintf(&out, message, marker);
    va_end(marker);
+   this->writeLog("info", out);
+}
 
+void fSysLog::debug(const char* message, ...) {
+   if (!DEBUG_MODE) {
+      return;
+   }
+
+   char *out;
+   int Ret;
+   va_list marker;
+   va_start(marker, message);
+   Ret = vasprintf(&out, message, marker);
+   va_end(marker);
+   this->writeLog("debug", out);
+}
+
+void fSysLog::writeLog(string type, char* message) {
    time_t rawtime;
    struct tm *timeinfo;
    char buffer[80];
@@ -53,8 +71,8 @@ void fSysLog::info(const char* message, ...) {
    
    strftime(buffer,80, "%b %d %H:%M:%S",timeinfo);
    
-   char messagebuffer[strlen(out) + 50];
-   sprintf(messagebuffer, "%s info %s: %s\n", buffer, getenv("TCPREMOTEIP"), out);
+   char messagebuffer[strlen(message) + 50];
+   sprintf(messagebuffer, "%s %s %s: %s\n", buffer, type.c_str(), getenv("TCPREMOTEIP"), message);
    fputs(messagebuffer, this->log);
    fflush(this->log);
 }
