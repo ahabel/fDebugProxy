@@ -28,8 +28,8 @@ using namespace std;
 
 struct sClient {
    string   uuid;
-   const unsigned char *   remote;
-   const unsigned char *   port;
+   const char *   remote;
+   int port;
 };
 
 
@@ -37,7 +37,8 @@ class ClientDB {
 public:
    ClientDB();
    void     open(string dbFile);
-   bool     addClient(string uuid, string remote, string port);
+   void     close();
+   bool     addClient(string uuid, string remote, int port);
    sClient  getClient(string uuid);
 
 private:
