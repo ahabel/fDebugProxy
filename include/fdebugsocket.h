@@ -1,3 +1,12 @@
+/**
+ * @author Andreas Habel
+ *
+ * @class fDebugSocket
+ * @brief Client Connection Handler
+ *
+ * @package fDebugProxy
+ */
+
 #ifndef FDEBUGSOCKET_H_
 #define FDEBUGSOCKET_H_
 
