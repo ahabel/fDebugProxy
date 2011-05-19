@@ -1,3 +1,12 @@
+/**
+ * @author Andreas Habel
+ *
+ * @class fDebugProxy
+ * @brief Main Class for handling fdebug requests
+ *
+ * @package fDebugProxy
+ */
+
 #ifndef FDEBUGPROXY_H_
 #define FDEBUGPROXY_H_
 
