@@ -12,12 +12,13 @@
 //
 #define DEFAULT_PORT   		5005
 #define FDEBUG_LOGFILE     "/var/log/fdebug/proxy.log"
+#define FDEBUG_CLIENTDB    "/var/lib/fdebug/proxy.client.db"
 
 #define BUF_SIZE           10000
 
 // Enable Debug Mode
 // this option should not be used in produtional environments!
-#define DEBUG_MODE         true
+#define DEBUG_MODE         false
 
 
 // fDebug Message Types
