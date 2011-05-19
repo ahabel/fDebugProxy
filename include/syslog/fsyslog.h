@@ -1,3 +1,12 @@
+/**
+ * @author Andreas Habel
+ *
+ * @class fSysLog
+ * @brief Logging Library
+ *
+ * @package fDebugProxy
+ */
+
 #ifndef FSYSLOG_H_
 #define FSYSLOG_H_
 
