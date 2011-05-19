@@ -31,6 +31,8 @@ void fDebugProxy::run() {
    
    // get socket input
    while(fgets(str, BUF_SIZE, stdin)) {
+      this->log->debug("RECV: %s\n", str);
+
       /* remove newline, if present */
       if( str[strlen(str)-1] == '\n') {
          str[strlen(str)-1] = '\0';
@@ -40,14 +42,16 @@ void fDebugProxy::run() {
       
       switch(message.type) {
          case FDEBUG_REGISTER: {
-            this->registerClient();
+            this->registerClient(message);
             this->sendServer("OK");
+            this->log->debug("RETURN");
             return;
          }
          
          case FDEBUG_SETCLIENT: {
             this->setClient(message);
             this->sendServer("OK");
+            this->log->debug("SETCLIENT");
             continue;
          }
          
@@ -64,20 +68,16 @@ void fDebugProxy::run() {
       
       if (!this->forwardData(message)) {
          // TODO: exit with code 1 here?
+         this->log->debug("ERROR: cannot forward message");
          exit(1);
       }
       
+      this->log->debug("SERVER: OK");
       this->sendServer("OK");
    }
 }
 
 fDebugMessage fDebugProxy::parse(char *str) {
-   // client register:
-   //    {"type":"REGISTER","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}","PORT":5005}}
-   
-   // server -> proxy connect
-   //     {"type":"SETCLIENT","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}"}}
-   
    fDebugMessage message;
    message.origin = str;
    
@@ -87,12 +87,14 @@ fDebugMessage fDebugProxy::parse(char *str) {
    if (root->type != 6) {
       // message is not an json object / 6 = CJSON_OBJECT
       //log->sendServer("ERROR: parsing json failed");
+      this->log->debug("PARSE ERROR: %i", root->type);
       return message;
    }
    
    
    string type = cJSON_GetObjectItem(root, "type")->valuestring;
    message.type = 2;
+   this->log->debug("message type: %s", type.c_str());
    
    if (type == "REGISTER") {
       message.type = FDEBUG_REGISTER;
@@ -118,8 +120,10 @@ void fDebugProxy::handleControl(fDebugMessage message) {
    // {"type":"CONTROL","payload":{"action":"QUIT"}}
 
    string action = cJSON_GetObjectItem(message.payload, "action")->valuestring;
+   this->log->debug("CONTROL RECV: %s\n", action.c_str());
+
    if (action == "HELO") {
-      this->log->info("HELO from %s", cJSON_GetObjectItem(message.payload, "server")->valuestring);
+      this->log->debug("HELO from %s", cJSON_GetObjectItem(message.payload, "server")->valuestring);
    }
 
    if (action == "QUIT") {
@@ -129,16 +133,23 @@ void fDebugProxy::handleControl(fDebugMessage message) {
    }
 }
 
-void fDebugProxy::registerClient() {
-   this->log->info("Registration with client completed");
-   this->db->addClient("foo", "x", "1002");
+void fDebugProxy::registerClient(fDebugMessage message) {
+   //{"type":"REGISTER","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}","PORT":5005}}
+   string uuid = cJSON_GetObjectItem(message.payload, "UUID")->valuestring;
+   int port = cJSON_GetObjectItem(message.payload, "PORT")->valueint;
+
+   this->db->addClient(uuid, getenv("TCPREMOTEIP"), port);
+   this->log->info("Registration with client completed (%s : %d)", uuid.c_str(), port);
 }
 
 void fDebugProxy::setClient(fDebugMessage message) {
-   sClient client = this->db->getClient("uuid");
+   //{"type":"SETCLIENT","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}"}}
+   string uuid = cJSON_GetObjectItem(message.payload, "UUID")->valuestring;
+   sClient client = this->db->getClient(uuid);
+
    this->socket = new fDebugSocket();
-   this->socket->connectClient("127.0.0.1", 5005);
-   //this->socket->connectClient(client.remote, client.port);
+   this->socket->connectClient(client.remote, client.port);
+   this->log->info("Connection to client established (%s)\n", client.remote);
 }
 
 bool fDebugProxy::forwardData(fDebugMessage message) {

@@ -49,6 +49,8 @@ bool fDebugSocket::connectClient(const char *addr, int port) {
    this->addr = addr;
    this->port = port;
    
+   this->log->debug("Establishing connection to %s:%d", (char*)this->addr, this->port);
+
    sockaddr_in clientaddr;
    clientaddr.sin_family      = AF_INET;
    clientaddr.sin_addr.s_addr = inet_addr((const char *)this->addr);
@@ -59,7 +61,6 @@ bool fDebugSocket::connectClient(const char *addr, int port) {
       exit(1);
    }
    
-   this->log->info("Client connection established: %s:%d", (char*)this->addr, this->port);
    return true;
 }
 
@@ -72,7 +73,7 @@ bool fDebugSocket::sendClient(char* data) {
       return false;
    }
    
-   //fprintf(stderr, ">>>>client>>>>:[%s]\n", data);
+   this->log->debug(">>>>client>>>>:[%s]\n", data);
    return true;
 }
 
@@ -95,7 +96,7 @@ char fDebugSocket::receive() {
    char *x;
    x = strtok(buf, "\r\n");
    sprintf(buffer, x);
-   //fprintf(stderr, "Recv: bytes rx: %d -- buffer: %i -- size: %i -- [%s]\n\n", bytes, strlen(buffer), sizeof(buffer), buf);
+   this->log->debug("Recv: bytes rx: %d -- buffer: %i -- size: %i -- [%s]\n", bytes, strlen(buffer), sizeof(buffer), buf);
    return *buf;
 }
 

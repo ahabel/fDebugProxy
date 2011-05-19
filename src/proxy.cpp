@@ -14,7 +14,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-   fprintf(stdout, "starting...\n");
+   /*fprintf(stdout, "starting...\n");
 
    ClientDB *db = new ClientDB();
    db->open("/tmp/x_fdebug.db");
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 
    sClient client = db->getClient("lol-foo");
 
-   return 0;
+   return 0;*/
    fDebugProxy *proxy = new fDebugProxy();
    proxy->run();
    

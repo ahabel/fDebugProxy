@@ -21,7 +21,7 @@ class fDebugProxy {
 public:
    fDebugProxy();
    void run();
-   void registerClient();
+   void registerClient(fDebugMessage message);
    void setClient(fDebugMessage message);
    
 private:
