@@ -15,6 +15,10 @@
 
 #define BUF_SIZE           10000
 
+// Enable Debug Mode
+// this option should not be used in produtional environments!
+#define DEBUG_MODE         true
+
 
 // fDebug Message Types
 #define FDEBUG_CONTROL     1
