@@ -10,8 +10,11 @@ public:
 	static fSysLog* getInstance();
 	void   init(char *logfile);
 	void   close();
+
 	void   info(const char *message, ...);
 	void   debug(const char *message, ...);
+	void   error(const char *message, ...);
+
 private:
    fSysLog() {}
    fSysLog(fSysLog const&){};            // copy constructor is private

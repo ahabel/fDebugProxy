@@ -20,8 +20,6 @@ fSysLog* fSysLog::getInstance() {
 
 void fSysLog::init(char *logfile) {
    this->logfile = logfile;
-   //printf("Using logfile: %s\n", this->logfile);
-   
    this->log = fopen(this->logfile, "at");
    if (!this->log) {
       log = fopen(this->logfile, "wt");
@@ -45,6 +43,16 @@ void fSysLog::info(const char* message, ...) {
    Ret = vasprintf(&out, message, marker);
    va_end(marker);
    this->writeLog("info", out);
+}
+
+void fSysLog::error(const char* message, ...) {
+   char *out;
+   int Ret;
+   va_list marker;
+   va_start(marker, message);
+   Ret = vasprintf(&out, message, marker);
+   va_end(marker);
+   this->writeLog("error", out);
 }
 
 void fSysLog::debug(const char* message, ...) {
