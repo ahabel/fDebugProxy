@@ -14,8 +14,7 @@
 
 
 fDebugSocket::fDebugSocket() {
-   fSysLog *log = fSysLog::getInstance();
-   this->log = log;
+   this->log = fSysLog::getInstance();
 
    if (!this->initSocket()) {
       perror("Initiating Socket to client");
@@ -73,7 +72,7 @@ bool fDebugSocket::sendClient(char* data) {
       return false;
    }
    
-   this->log->debug(">>>>client>>>>:[%s]\n", data);
+   this->log->debug(">> Sending %d bytes data to client\n", bytes);
    return true;
 }
 
@@ -96,7 +95,8 @@ char fDebugSocket::receive() {
    char *x;
    x = strtok(buf, "\r\n");
    sprintf(buffer, x);
-   this->log->debug("Recv: bytes rx: %d -- buffer: %i -- size: %i -- [%s]\n", bytes, strlen(buffer), sizeof(buffer), buf);
+
+   this->log->debug("[client] Received from client: bytes rx: %d (buffer: %i): %s", bytes, strlen(buffer), buf);
    return *buf;
 }
 

@@ -21,7 +21,7 @@ fDebugProxy::fDebugProxy() {
 
    // init sqlite db
    this->db = new ClientDB();
-   this->db->open("/tmp/x_fdebug.db");
+   this->db->open(FDEBUG_CLIENTDB);
 
    this->socket = NULL;
 }
@@ -31,8 +31,6 @@ void fDebugProxy::run() {
    
    // get socket input
    while(fgets(str, BUF_SIZE, stdin)) {
-      this->log->debug("RECV: %s\n", str);
-
       /* remove newline, if present */
       if( str[strlen(str)-1] == '\n') {
          str[strlen(str)-1] = '\0';
@@ -44,14 +42,12 @@ void fDebugProxy::run() {
          case FDEBUG_REGISTER: {
             this->registerClient(message);
             this->sendServer("OK");
-            this->log->debug("RETURN");
             return;
          }
          
          case FDEBUG_SETCLIENT: {
             this->setClient(message);
             this->sendServer("OK");
-            this->log->debug("SETCLIENT");
             continue;
          }
          
@@ -72,7 +68,6 @@ void fDebugProxy::run() {
          exit(1);
       }
       
-      this->log->debug("SERVER: OK");
       this->sendServer("OK");
    }
 }
@@ -80,7 +75,6 @@ void fDebugProxy::run() {
 fDebugMessage fDebugProxy::parse(char *str) {
    fDebugMessage message;
    message.origin = str;
-   
    
    // Check if received message is a valid JSON structure
    cJSON *root = cJSON_Parse(str);
@@ -94,7 +88,7 @@ fDebugMessage fDebugProxy::parse(char *str) {
    
    string type = cJSON_GetObjectItem(root, "type")->valuestring;
    message.type = 2;
-   this->log->debug("message type: %s", type.c_str());
+   this->log->debug("Received new message of type '%s'", type.c_str());
    
    if (type == "REGISTER") {
       message.type = FDEBUG_REGISTER;
@@ -110,6 +104,7 @@ fDebugMessage fDebugProxy::parse(char *str) {
 }
 
 bool fDebugProxy::sendServer(const char* str) {
+   this->log->debug("Sending 'OK' to origin server");
    fprintf(stdout, "%s\r\n", str);
    cout.flush();
    return true;
@@ -120,7 +115,6 @@ void fDebugProxy::handleControl(fDebugMessage message) {
    // {"type":"CONTROL","payload":{"action":"QUIT"}}
 
    string action = cJSON_GetObjectItem(message.payload, "action")->valuestring;
-   this->log->debug("CONTROL RECV: %s\n", action.c_str());
 
    if (action == "HELO") {
       this->log->debug("HELO from %s", cJSON_GetObjectItem(message.payload, "server")->valuestring);
@@ -149,7 +143,7 @@ void fDebugProxy::setClient(fDebugMessage message) {
 
    this->socket = new fDebugSocket();
    this->socket->connectClient(client.remote, client.port);
-   this->log->info("Connection to client established (%s)\n", client.remote);
+   this->log->info("Connection to client established (%s)", client.remote);
 }
 
 bool fDebugProxy::forwardData(fDebugMessage message) {
