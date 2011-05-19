@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <sqlite3.h>
 
+#include "syslog/fsyslog.h"
+
 using namespace std;
 
 struct sClient {
@@ -43,6 +45,7 @@ public:
 
 private:
    sqlite3* db;
+   fSysLog* log;
    void  createTables();
 };
 
