@@ -65,11 +65,11 @@ bool fDebugSocket::connectClient(const char *addr, int port) {
 
 bool fDebugSocket::sendClient(char* data) {
    data[strlen(data)] = '\n';
-
+   
    int bytes = send(this->sock, data, strlen(data), 0);
    if (bytes == -1) {
       perror("Sending to socket failed");
-      return false;
+      exit(1);
    }
    
    this->log->debug(">> Sending %d bytes data to client\n", bytes);
