@@ -12,7 +12,6 @@ RM := rm -rf
 -include src/syslog/subdir.mk
 -include src/subdir.mk
 -include src/json/subdir.mk
--include src/fconfig/subdir.mk
 -include src/db/subdir.mk
 -include objects.mk
 
