@@ -4,14 +4,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <sstream>
+
 #include "global.h"
-#include "json/cJSON.h"
+
 #include "syslog/fsyslog.h"
 #include "fdebugproxy.h"
 #include "fdebugsocket.h"
 #include "db/database.h"
 
+
 using namespace std;
+using namespace jsonxx;
 
 fDebugProxy::fDebugProxy() {
    // init logging
@@ -36,9 +40,9 @@ void fDebugProxy::run() {
          str[strlen(str)-1] = '\0';
       }
       
-      fDebugMessage message = this->parse(str);
+      fDebugMessage *message = new fDebugMessage(str);
       
-      switch(message.type) {
+      switch(message->type) {
          case FDEBUG_REGISTER: {
             this->registerClient(message);
             this->sendServer("OK");
@@ -72,37 +76,6 @@ void fDebugProxy::run() {
    }
 }
 
-fDebugMessage fDebugProxy::parse(char *str) {
-   fDebugMessage message;
-   message.origin = str;
-   
-   // Check if received message is a valid JSON structure
-   cJSON *root = cJSON_Parse(str);
-   if (root->type != 6) {
-      // message is not an json object / 6 = CJSON_OBJECT
-      //log->sendServer("ERROR: parsing json failed");
-      this->log->debug("PARSE ERROR: %i", root->type);
-      return message;
-   }
-   
-   
-   string type = cJSON_GetObjectItem(root, "type")->valuestring;
-   message.type = 2;
-   this->log->debug("Received new message of type '%s'", type.c_str());
-   
-   if (type == "REGISTER") {
-      message.type = FDEBUG_REGISTER;
-   } else if (type == "SETCLIENT") {
-      message.type = FDEBUG_SETCLIENT;
-   } else if (type == "CONTROL") {
-      message.type = FDEBUG_CONTROL;
-   }
-   
-   cJSON *payload = cJSON_GetObjectItem(root, "payload");
-   message.payload = payload;
-   return message;
-}
-
 bool fDebugProxy::sendServer(const char* str) {
    this->log->debug("Sending 'OK' to origin server");
    fprintf(stdout, "%s\r\n", str);
@@ -110,14 +83,13 @@ bool fDebugProxy::sendServer(const char* str) {
    return true;
 }
 
-void fDebugProxy::handleControl(fDebugMessage message) {
+void fDebugProxy::handleControl(fDebugMessage *message) {
    // {"type":"CONTROL","payload":{"action":"HELO","url":"\/de\/site\/index.xml","server":"bluepoints.mobile.dev"}}
    // {"type":"CONTROL","payload":{"action":"QUIT"}}
 
-   string action = cJSON_GetObjectItem(message.payload, "action")->valuestring;
-
+   string action = message->object.get<Object>("payload").get<string>("action");
    if (action == "HELO") {
-      this->log->debug("HELO from %s", cJSON_GetObjectItem(message.payload, "server")->valuestring);
+      this->log->debug("HELO from %s", message->object.get<Object>("payload").get<string>("server").c_str());
    }
 
    if (action == "QUIT") {
@@ -127,18 +99,18 @@ void fDebugProxy::handleControl(fDebugMessage message) {
    }
 }
 
-void fDebugProxy::registerClient(fDebugMessage message) {
+void fDebugProxy::registerClient(fDebugMessage* message) {
    //{"type":"REGISTER","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}","PORT":5005}}
-   string uuid = cJSON_GetObjectItem(message.payload, "UUID")->valuestring;
-   int port = cJSON_GetObjectItem(message.payload, "PORT")->valueint;
+   string uuid = message->object.get<Object>("payload").get<string>("UUID");
+   int port    = (int)message->object.get<Object>("payload").get<double>("PORT");
 
    this->db->addClient(uuid, getenv("TCPREMOTEIP"), port);
    this->log->info("Registration with client completed (%s : %d)", uuid.c_str(), port);
 }
 
-void fDebugProxy::setClient(fDebugMessage message) {
+void fDebugProxy::setClient(fDebugMessage* message) {
    //{"type":"SETCLIENT","payload":{"UUID":"{4abc3ebc-1bab-455e-b8b4-a5771eb60569}"}}
-   string uuid = cJSON_GetObjectItem(message.payload, "UUID")->valuestring;
+   string uuid = message->object.get<Object>("payload").get<string>("UUID");
    sClient client = this->db->getClient(uuid);
 
    this->socket = new fDebugSocket();
@@ -146,8 +118,8 @@ void fDebugProxy::setClient(fDebugMessage message) {
    this->log->info("Connection to client established (%s)", client.remote);
 }
 
-bool fDebugProxy::forwardData(fDebugMessage message) {
-   this->socket->sendClient(message.origin);
+bool fDebugProxy::forwardData(fDebugMessage *message) {
+   this->socket->sendClient(message->origin);
    this->socket->receive();
    return true;
 }
