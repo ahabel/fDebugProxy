@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/fdebugmessage.cpp \
 ../src/fdebugproxy.cpp \
 ../src/fdebugsocket.cpp \
 ../src/proxy.cpp 
 
 OBJS += \
+./src/fdebugmessage.o \
 ./src/fdebugproxy.o \
 ./src/fdebugsocket.o \
 ./src/proxy.o 
 
 CPP_DEPS += \
+./src/fdebugmessage.d \
 ./src/fdebugproxy.d \
 ./src/fdebugsocket.d \
 ./src/proxy.d 

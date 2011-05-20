@@ -3,21 +3,21 @@
 ################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
-C_SRCS += \
-../src/json/cJSON.c 
+CC_SRCS += \
+../src/json/jsonxx.cc 
 
 OBJS += \
-./src/json/cJSON.o 
+./src/json/jsonxx.o 
 
-C_DEPS += \
-./src/json/cJSON.d 
+CC_DEPS += \
+./src/json/jsonxx.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-src/json/%.o: ../src/json/%.c
+src/json/%.o: ../src/json/%.cc
 	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C Compiler'
-	gcc -I"../include" -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I"../include" -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
