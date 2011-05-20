@@ -1,0 +1,8 @@
+#!/bin/sh
+HOSTNAME="localhost"
+PORT="5000"
+FDEBUGD="../release/fdebug-proxy"
+
+exec /usr/bin/tcpserver -D -v -R -l $HOSTNAME -c "10" 0 $PORT $FDEBUGD >>/var/log/fdebug/proxy.log 2>&1
+
+
