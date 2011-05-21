@@ -26,18 +26,19 @@ make all
 
 %install
 [ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}
-install -m 755 -d $RPM_BUILD_ROOT/usr/bin/
 install -m 755 -d $RPM_BUILD_ROOT/var/log/fdebug/
+install -m 755 -d $RPM_BUILD_ROOT/var/fdebug-proxy/
+install -m 755 -d $RPM_BUILD_ROOT/var/fdebug-proxy/bin/
+
 
 # proxy binary
-install -m 755 release/fdebug-proxy	$RPM_BUILD_ROOT/usr/bin/fdebug-proxy
+install -m 755 release/fdebug-proxy	$RPM_BUILD_ROOT/var/fdebug-proxy/bin/fdebug-proxy
 
 # proxy scripts and config
-install -m 755 -d			$RPM_BUILD_ROOT/var/lib/fdebug/
-install -m 755 bin/fdebug-proxy 	$RPM_BUILD_ROOT/var/lib/fdebug/fdebug-proxy
-install -m 644 bin/hostname		$RPM_BUILD_ROOT/var/lib/fdebug/hostname
-install -m 644 bin/maxconnections	$RPM_BUILD_ROOT/var/lib/fdebug/maxconnections
-install -m 644 bin/port			$RPM_BUILD_ROOT/var/lib/fdebug/port
+install -m 755 bin/run.sh		$RPM_BUILD_ROOT/var/fdebug-proxy/bin/run.sh
+install -m 644 bin/hostname		$RPM_BUILD_ROOT/var/fdebug-proxy/hostname
+install -m 644 bin/maxconnections	$RPM_BUILD_ROOT/var/fdebug-proxy/maxconnections
+install -m 644 bin/port			$RPM_BUILD_ROOT/var/fdebug-proxy/port
 
 
 %clean
@@ -45,10 +46,12 @@ install -m 644 bin/port			$RPM_BUILD_ROOT/var/lib/fdebug/port
 
 %files
 %defattr(-,root,root,-)
-/usr/bin/fdebug-proxy
+/var/fdebug-proxy/bin/fdebug-proxy
+/var/fdebug-proxy/bin/run.sh
+/var/fdebug-proxy/hostname
+/var/fdebug-proxy/maxconnections
+/var/fdebug-proxy/port
 
-/var/lib/fdebug/fdebug-proxy
-/var/lib/fdebug/hostname
-/var/lib/fdebug/maxconnections
-/var/lib/fdebug/port
+
+
 
