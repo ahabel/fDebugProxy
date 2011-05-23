@@ -25,11 +25,9 @@ public:
 	void   error(const char *message, ...);
 
 private:
+	static fSysLog *instance;
    fSysLog() {}
-   fSysLog(fSysLog const&){};            // copy constructor is private
-   fSysLog& operator=(fSysLog const&){}; // assignment operator is private
-   static fSysLog* m_pInstance;
-   
+
    char *logfile;
    FILE *log;
 

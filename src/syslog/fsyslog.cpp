@@ -9,13 +9,12 @@
 #include "global.h"
 #include "syslog/fsyslog.h"
 
-fSysLog* fSysLog::m_pInstance = NULL;
-
+fSysLog* fSysLog::instance = NULL;
 fSysLog* fSysLog::getInstance() {
-   if (!m_pInstance) {  // Only allow one instance of class to be generated.
-      m_pInstance = new fSysLog;
+   if (!instance) {
+      instance = new fSysLog;
    }
-   return m_pInstance;
+   return instance;
 }
 
 void fSysLog::init(char *logfile) {
