@@ -8,11 +8,11 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include subdir.mk
 -include src/syslog/subdir.mk
--include src/subdir.mk
 -include src/json/subdir.mk
 -include src/db/subdir.mk
+-include src/subdir.mk
+-include subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -47,7 +47,7 @@ all: fdebug-proxy
 fdebug-proxy: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++  -o"fdebug-proxy" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++  -o "fdebug-proxy" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
